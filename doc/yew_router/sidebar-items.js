@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Request","The request to the RouterAgent"]],"macro":[["routes","Convinience macro for route creation"]],"struct":[["Route","A single route abstraction"],["RouterAgent","The RouterAgent worker holds on to the RouterService singleton and mediates access to it."]]});
