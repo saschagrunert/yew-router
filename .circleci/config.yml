@@ -106,10 +106,8 @@ jobs:
             - /root/.cargo/registry
             - target
   test:
-    <<: *defaults-postgres
     steps:
       - checkout
-      - <<: *prepare-postgres
       - run:
           name: Run tests
           command: make coverage
