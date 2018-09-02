@@ -1,0 +1,118 @@
+---
+version: 2
+defaults: &defaults
+  docker:
+    - image: saschagrunert/build-rust
+workflows:
+  version: 2
+  pipeline:
+    jobs:
+      - build
+      - doc
+      - doc-publish:
+          requires:
+            - doc
+          filters:
+            branches:
+              only: master
+      - rustfmt
+      - clippy
+      - test
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Version information
+          command: |
+            rustc --version
+            rustup --version
+            cargo --version
+      - restore_cache:
+          keys:
+            - build-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Build all targets
+          command: make
+      - save_cache:
+          key: build-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
+          paths:
+            - /root/.cargo/registry
+            - target
+  doc:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - doc-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Build documentation
+          command: make build-doc
+      - save_cache:
+          key: doc-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
+          paths:
+            - /root/.cargo/registry
+            - target
+      - persist_to_workspace:
+          root: .
+          paths:
+            - target/doc
+  doc-publish:
+    <<: *defaults
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - c2:05:c6:97:5c:9d:17:b7:c8:84:fa:6d:05:55:75:8a
+      - checkout
+      - run:
+          name: Setup git
+          command: |
+            git config --global user.email mail@saschagrunert.de
+            git config --global user.name "CircleCI"
+      - attach_workspace:
+          at: .
+      - run:
+          name: Deploy documentation
+          command: |
+            git fetch origin gh-pages
+            git checkout -f gh-pages
+            rm -rf doc
+            mv target/doc .
+            git add .
+            git diff-index --quiet HEAD || git commit -m 'Update documentation'
+            git push -f origin gh-pages
+  rustfmt:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Rust-Format
+          command: make lint-rustfmt
+  clippy:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - clippy-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Clippy
+          command: make lint-clippy
+      - save_cache:
+          key: clippy-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
+          paths:
+            - /root/.cargo/registry
+            - target
+  test:
+    <<: *defaults-postgres
+    steps:
+      - checkout
+      - <<: *prepare-postgres
+      - run:
+          name: Run tests
+          command: make coverage
+      - run:
+          name: Upload coverage report
+          command: bash <(curl -s https://codecov.io/bash)
