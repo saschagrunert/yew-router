@@ -106,6 +106,7 @@ jobs:
             - /root/.cargo/registry
             - target
   test:
+    <<: *defaults
     steps:
       - checkout
       - run:
