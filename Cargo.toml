@@ -17,7 +17,7 @@ codecov = { repository = "saschagrunert/yew-router", branch = "master", service 
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-failure = "0.1.2"
+failure = "0.1.5"
 serde = "1.0.84"
 serde_derive = "1.0.84"
 stdweb = "0.4.13"
