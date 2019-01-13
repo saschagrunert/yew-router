@@ -203,7 +203,8 @@ pub enum Request<T> {
 
 impl<T> Transferable for Request<T> where
     for<'de> T: Serialize + Deserialize<'de>
-{}
+{
+}
 
 /// The RouterAgent worker holds on to the RouterService singleton and mediates
 /// access to it.
