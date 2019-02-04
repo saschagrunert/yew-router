@@ -315,8 +315,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "yew"
-version = "0.5.0"
-source = "git+https://github.com/DenisKolodin/yew#0ef52f6b58acac69f535cea52bd274c9bdcc53f9"
+version = "0.6.0"
+source = "git+https://github.com/DenisKolodin/yew#a6a73948331ae50a9b6a196c721f21b4a39b52d1"
 dependencies = [
  "anymap 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "bincode 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -338,7 +338,7 @@ dependencies = [
  "serde 1.0.87 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.87 (registry+https://github.com/rust-lang/crates.io-index)",
  "stdweb 0.4.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "yew 0.5.0 (git+https://github.com/DenisKolodin/yew)",
+ "yew 0.6.0 (git+https://github.com/DenisKolodin/yew)",
 ]
 
 [metadata]
@@ -384,4 +384,4 @@ dependencies = [
 "checksum winapi 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)" = "773ef9dcc5f24b7d850d0ff101e542ff24c3b090a9768e03ff889fdef41f00fd"
 "checksum winapi-i686-pc-windows-gnu 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ac3b87c63620426dd9b991e5ce0329eff545bccbbb34f3be09ff6fb6ab51b7b6"
 "checksum winapi-x86_64-pc-windows-gnu 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
-"checksum yew 0.5.0 (git+https://github.com/DenisKolodin/yew)" = "<none>"
+"checksum yew 0.6.0 (git+https://github.com/DenisKolodin/yew)" = "<none>"
