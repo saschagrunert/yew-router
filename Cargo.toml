@@ -20,5 +20,5 @@ maintenance = { status = "actively-developed" }
 failure = "0.1.5"
 serde = "1.0.89"
 serde_derive = "1.0.89"
-stdweb = "0.4.14"
+stdweb = "0.4.15"
 yew = { git = "https://github.com/DenisKolodin/yew" }
