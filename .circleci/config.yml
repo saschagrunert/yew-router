@@ -122,7 +122,7 @@ jobs:
             IMAGE: *image
           command: |
             docker pull $IMAGE
-            docker run -t -v $(pwd):/build -w /build $IMAGE \
+            docker run -t --security-opt seccomp=unconfined -v $(pwd):/build -w /build $IMAGE \
               bash -c "\
                 make coverage && \
                 bash <(curl -s https://codecov.io/bash)"
