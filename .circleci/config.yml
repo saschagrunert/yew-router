@@ -1,8 +1,15 @@
 ---
-version: 2
-defaults: &defaults
+version: 2.1
+
+executors:
   docker:
-    - image: saschagrunert/build-rust
+    docker:
+      - image: &image saschagrunert/build-rust
+  machine:
+    machine:
+      docker_layer_caching: true
+      image: ubuntu-1604:201903-01
+
 workflows:
   version: 2
   pipeline:
@@ -20,7 +27,7 @@ workflows:
       - test
 jobs:
   build:
-    <<: *defaults
+    executor: docker
     steps:
       - checkout
       - run:
@@ -41,7 +48,7 @@ jobs:
             - /root/.cargo/registry
             - target
   doc:
-    <<: *defaults
+    executor: docker
     steps:
       - checkout
       - restore_cache:
@@ -60,7 +67,7 @@ jobs:
           paths:
             - target/doc
   doc-publish:
-    <<: *defaults
+    executor: docker
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -84,14 +91,14 @@ jobs:
             git diff-index --quiet HEAD || git commit -m 'Update documentation'
             git push -f origin gh-pages
   rustfmt:
-    <<: *defaults
+    executor: docker
     steps:
       - checkout
       - run:
           name: Rust-Format
           command: make lint-rustfmt
   clippy:
-    <<: *defaults
+    executor: docker
     steps:
       - checkout
       - restore_cache:
@@ -106,12 +113,16 @@ jobs:
             - /root/.cargo/registry
             - target
   test:
-    <<: *defaults
+    executor: machine
     steps:
       - checkout
       - run:
           name: Run tests
-          command: make coverage
-      - run:
-          name: Upload coverage report
-          command: bash <(curl -s https://codecov.io/bash)
+          environment:
+            IMAGE: *image
+          command: |
+            docker pull $IMAGE
+            docker run -t -v $(pwd):/build -w /build $IMAGE \
+              bash -c "\
+                make coverage && \
+                bash <(curl -s https://codecov.io/bash)"
