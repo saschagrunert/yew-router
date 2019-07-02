@@ -191,6 +191,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "serde"
 version = "1.0.94"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "serde_derive 1.0.94 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "serde_derive"
@@ -351,7 +354,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "yew"
 version = "0.7.0"
-source = "git+https://github.com/DenisKolodin/yew#792a254acdc84b1419f2c2d6219e933ca7081c07"
+source = "git+https://github.com/DenisKolodin/yew#db6c6e01a655dd7e2213d2071b886eaa1b720f3b"
 dependencies = [
  "anymap 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "bincode 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -363,6 +366,8 @@ dependencies = [
  "serde_json 1.0.40 (registry+https://github.com/rust-lang/crates.io-index)",
  "slab 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "stdweb 0.4.17 (registry+https://github.com/rust-lang/crates.io-index)",
+ "wasm-bindgen 0.2.47 (registry+https://github.com/rust-lang/crates.io-index)",
+ "yew-shared 0.7.0 (git+https://github.com/DenisKolodin/yew)",
 ]
 
 [[package]]
@@ -374,6 +379,20 @@ dependencies = [
  "serde_derive 1.0.94 (registry+https://github.com/rust-lang/crates.io-index)",
  "stdweb 0.4.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "yew 0.7.0 (git+https://github.com/DenisKolodin/yew)",
+]
+
+[[package]]
+name = "yew-shared"
+version = "0.7.0"
+source = "git+https://github.com/DenisKolodin/yew#db6c6e01a655dd7e2213d2071b886eaa1b720f3b"
+dependencies = [
+ "anymap 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "bincode 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.94 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slab 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "stdweb 0.4.17 (registry+https://github.com/rust-lang/crates.io-index)",
+ "wasm-bindgen 0.2.47 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [metadata]
@@ -423,3 +442,4 @@ dependencies = [
 "checksum wasm-bindgen-shared 0.2.47 (registry+https://github.com/rust-lang/crates.io-index)" = "15de16ddb30cfd424a87598b30021491bae1607d32e52056979865c98b7913b4"
 "checksum winapi 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)" = "167dc9d6949a9b857f3451275e911c3f44255842c1f7a76f33c55103a909087a"
 "checksum yew 0.7.0 (git+https://github.com/DenisKolodin/yew)" = "<none>"
+"checksum yew-shared 0.7.0 (git+https://github.com/DenisKolodin/yew)" = "<none>"
