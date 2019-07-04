@@ -10,6 +10,7 @@ keywords = ["web", "yew", "router", "routing", "webassembly"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/saschagrunert/yew-router"
+edition = "2018"
 
 [badges]
 circle-ci = { repository = "saschagrunert/yew-router", branch = "master" }
