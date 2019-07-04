@@ -1,6 +1,5 @@
 use failure::Fallible;
 use serde::{Deserialize, Serialize};
-use serde_derive::{Deserialize, Serialize};
 use std::{collections::HashSet, fmt::Debug, marker::PhantomData};
 use stdweb::{
     unstable::TryFrom,
