@@ -43,27 +43,13 @@
 <span id="43">43</span>
 <span id="44">44</span>
 <span id="45">45</span>
-<span id="46">46</span>
-<span id="47">47</span>
-<span id="48">48</span>
-<span id="49">49</span>
-<span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Yew routing extension</span>
 
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
 
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">failure</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde</span>;
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde_derive</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">stdweb</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">yew</span>;
-
 <span class="kw">mod</span> <span class="ident">router</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">router</span>::{<span class="ident">Request</span>, <span class="ident">Route</span>, <span class="ident">RouterAgent</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">router</span>::{<span class="ident">Request</span>, <span class="ident">Route</span>, <span class="ident">RouterAgent</span>};
 
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="doccomment">/// Convinience macro for route creation</span>
