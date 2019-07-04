@@ -2,15 +2,8 @@
 
 #![deny(missing_docs)]
 
-extern crate failure;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate stdweb;
-extern crate yew;
-
 mod router;
-pub use router::{Request, Route, RouterAgent};
+pub use crate::router::{Request, Route, RouterAgent};
 
 #[macro_export]
 /// Convinience macro for route creation
