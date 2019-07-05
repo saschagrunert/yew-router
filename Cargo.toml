@@ -21,4 +21,4 @@ maintenance = { status = "actively-developed" }
 failure = "0.1.5"
 serde = { version = "1.0.94", features = ["derive"] }
 stdweb = "0.4.17"
-yew = "0.5.0"
+yew = "0.6.0"
