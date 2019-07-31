@@ -1,3 +1,5 @@
+#![recursion_limit="256"]
+
 #[macro_use]
 extern crate yew_router;
 use yew_router::{Request, Route, RouterAgent};
@@ -6,6 +8,7 @@ use yew::{html, Component, ComponentLink, Html, Renderable, ShouldRender, Bridge
 
 // Define application routes via the macro
 // This creates the `RouterTarget` struct
+// Error is a required route according to the router macro
 routes! {
     Error =>  "/error",
     Login =>  "/login",
@@ -25,8 +28,6 @@ pub struct RootComponent {
 pub enum PageActions {
     // The route option contains a route struct
     Route(Route<()>),    
-    Page1,
-    Page2,
 }
 
 
@@ -50,17 +51,10 @@ impl Component for RootComponent {
         // Match against the user interactions
         // This can be any interaction defined in the PageActions enum
         match interaction {
-            // Handle anything that matches routing and update our child componenet
-            PageActions::Page1 => {
-                self.router_agent.send(yew_router::Request::ChangeRoute(RouterTarget::Login.into()));
-                self.child_component = RouterTarget::Login.into();
+            PageActions::Route(route) => {
+                self.child_component = route.into()
             },
-            PageActions::Page2 => {
-                self.router_agent.send(yew_router::Request::ChangeRoute(RouterTarget::Error.into()));
-                self.child_component = RouterTarget::Error.into();
-            },
-
-            // PageActions::Route(route) => self.child_component = route.into(),
+        
             _ => {},
         }
         true
@@ -73,8 +67,8 @@ impl Renderable<RootComponent> for RootComponent {
             // Let's place a set of html that sticks with the page even when we update the child componenet
             <div>
                 <div>
-                    <button onclick=|_| PageActions::Page1>{ "Click to go to Login Page" }</button>
-                    <button onclick=|_| PageActions::Page2>{ "Click to go to Error Page" }</button>
+                    <button onclick=|_| PageActions::Route(RouterTarget::Login.into())>{ "Click to go to Login Page" }</button>
+                    <button onclick=|_| PageActions::Route(RouterTarget::Error.into())>{ "Click to go to Error Page" }</button>
                 </div>
                 // Render out the child componenet                    
                 { self.child_component.view() }
