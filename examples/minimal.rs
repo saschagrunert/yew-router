@@ -27,7 +27,9 @@ pub struct RootComponent {
 // Define some basic actions that can be executed by elements on our page
 pub enum PageActions {
     // The route option contains a route struct
-    Route(Route<()>),    
+    Route(Route<()>), 
+    Page1,
+    Page2   
 }
 
 
@@ -51,8 +53,17 @@ impl Component for RootComponent {
         // Match against the user interactions
         // This can be any interaction defined in the PageActions enum
         match interaction {
+            PageActions::Page1 => {
+                // Route(RouterTarget::Login.into()
+                self.router_agent.send(yew_router::Request::ChangeRoute(RouterTarget::Login.into()));       
+            },
+            PageActions::Page2 => {
+                self.router_agent.send(yew_router::Request::ChangeRoute(RouterTarget::Error.into()));       
+            },
+
             PageActions::Route(route) => {
-                self.child_component = route.into()
+                // self.router_agent.send(yew_router::Request::ChangeRoute(route.into()));       
+                self.child_component = route.into();
             },
         
             _ => {},
@@ -67,8 +78,8 @@ impl Renderable<RootComponent> for RootComponent {
             // Let's place a set of html that sticks with the page even when we update the child componenet
             <div>
                 <div>
-                    <button onclick=|_| PageActions::Route(RouterTarget::Login.into())>{ "Click to go to Login Page" }</button>
-                    <button onclick=|_| PageActions::Route(RouterTarget::Error.into())>{ "Click to go to Error Page" }</button>
+                    <button onclick=|_| PageActions::Page1>{ "Click to go to Login Page" }</button>
+                    <button onclick=|_| PageActions::Page2>{ "Click to go to Error Page" }</button>
                 </div>
                 // Render out the child componenet                    
                 { self.child_component.view() }
