@@ -24,7 +24,6 @@ workflows:
               only: master
       - rustfmt
       - clippy
-      - test
 jobs:
   build:
     executor: docker
@@ -112,18 +111,3 @@ jobs:
           paths:
             - /root/.cargo/registry
             - target
-  test:
-    executor: machine
-    steps:
-      - checkout
-      - run:
-          name: Run tests
-          environment:
-            IMAGE: *image
-          command: |
-            docker pull $IMAGE
-            docker run -t --security-opt seccomp=unconfined \
-              -v $(pwd):/build -w /build -e CODECOV_TOKEN $IMAGE \
-              bash -c "\
-                make coverage && \
-                bash <(curl -s https://codecov.io/bash)"
