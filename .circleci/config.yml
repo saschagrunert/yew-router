@@ -2,13 +2,9 @@
 version: 2.1
 
 executors:
-  docker:
+  container:
     docker:
       - image: &image saschagrunert/build-rust
-  machine:
-    machine:
-      docker_layer_caching: true
-      image: ubuntu-1604:201903-01
 
 workflows:
   version: 2
@@ -24,9 +20,10 @@ workflows:
               only: master
       - rustfmt
       - clippy
+      - test
 jobs:
   build:
-    executor: docker
+    executor: container
     steps:
       - checkout
       - run:
@@ -47,7 +44,7 @@ jobs:
             - /root/.cargo/registry
             - target
   doc:
-    executor: docker
+    executor: container
     steps:
       - checkout
       - restore_cache:
@@ -66,7 +63,7 @@ jobs:
           paths:
             - target/doc
   doc-publish:
-    executor: docker
+    executor: container
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -90,14 +87,14 @@ jobs:
             git diff-index --quiet HEAD || git commit -m 'Update documentation'
             git push -f origin gh-pages
   rustfmt:
-    executor: docker
+    executor: container
     steps:
       - checkout
       - run:
           name: Rust-Format
           command: make lint-rustfmt
   clippy:
-    executor: docker
+    executor: container
     steps:
       - checkout
       - restore_cache:
@@ -108,6 +105,21 @@ jobs:
           command: make lint-clippy
       - save_cache:
           key: clippy-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
+          paths:
+            - /root/.cargo/registry
+            - target
+  test:
+    executor: container
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - test-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Test if the example builds
+          command: cargo web build --example minimal
+      - save_cache:
+          key: test-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
           paths:
             - /root/.cargo/registry
             - target
