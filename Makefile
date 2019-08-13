@@ -5,7 +5,6 @@ FRONTEND_ARGS = $(GENERAL_ARGS) --target wasm32-unknown-unknown
 .PHONY: \
 	build \
 	build-doc \
-	coverage \
 	lint-rustfmt \
 	lint-clippy
 
@@ -22,9 +21,6 @@ build:
 
 build-doc:
 	cargo doc --all --no-deps
-
-coverage:
-	cargo kcov
 
 lint-clippy:
 	cargo clippy -- -D warnings
