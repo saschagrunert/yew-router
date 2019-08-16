@@ -19,6 +19,6 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 failure = "0.1.5"
-serde = { version = "1.0.98", features = ["derive"] }
+serde = { version = "1.0.99", features = ["derive"] }
 stdweb = "0.4.18"
 yew = "0.8.0"
