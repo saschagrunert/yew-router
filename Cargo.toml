@@ -22,3 +22,8 @@ failure = "0.1.5"
 serde = { version = "1.0.101", features = ["derive"] }
 stdweb = "0.4.18"
 yew = "0.8.0"
+
+[dev-dependencies]
+smart-default = "0.5.2"
+log = "0.4"
+web_logger = "0.1"
