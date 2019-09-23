@@ -2,6 +2,7 @@ use failure::Fallible;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, fmt::Debug, marker::PhantomData};
 use stdweb::{
+    js,
     unstable::TryFrom,
     web::{
         event::PopStateEvent, window, EventListenerHandle, History,
@@ -101,6 +102,11 @@ where
     pub fn get_fragment(&self) -> Fallible<String> {
         Ok(self.location.hash()?)
     }
+
+    /// Gets the history's current state.
+    pub fn get_state(&self) -> T where T: Default {
+        T::try_from(js! { return history.state; }).unwrap_or_default()
+    }
 }
 
 impl<T> Default for RouterService<T>
@@ -174,7 +180,7 @@ where
             path_segments,
             query,
             fragment,
-            state: T::default(),
+            state: route_service.get_state(),
         })
     }
 }
