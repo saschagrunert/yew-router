@@ -1,6 +1,7 @@
 #![recursion_limit = "256"]
+#![feature(slice_patterns)]
 
-use std::{convert::Into, fmt};
+use std::{convert::Into, fmt, str::FromStr};
 
 use log::info;
 use serde::{Deserialize, Serialize};
@@ -64,6 +65,44 @@ impl fmt::Display for SettingsRoute {
     }
 }
 
+impl FromStr for RouterTarget {
+    type Err = ();
+
+    fn from_str(path: &str) -> Result<Self, Self::Err> {
+        Ok(match &path_segments(path)[..] {
+            ["home"] => RouterTarget::Home,
+            ["feed"] => RouterTarget::Feed,
+            ["profile", user_id] => RouterTarget::Profile { user_id: parse(user_id)? },
+            ["foo", name, id] => RouterTarget::Foo { name: name.to_string(), id: parse(id)? },
+            ["post", id] => RouterTarget::Post(parse(id)?),
+            ["bar", name, id] => RouterTarget::Bar(name.to_string(), parse(id)?),
+            ["settings", sub_route @ ..] => RouterTarget::Settings(parse(&sub_route.join("/"))?),
+            _ => Err(())?
+        })
+    }
+}
+
+impl FromStr for SettingsRoute {
+    type Err = ();
+
+    fn from_str(path: &str) -> Result<Self, Self::Err> {
+        Ok(match &path_segments(path)[..] {
+            ["notifications"] => SettingsRoute::Notifications,
+            ["privacy"] => SettingsRoute::Privacy,
+            ["foobar", id] => SettingsRoute::Foobar(parse(id)?),
+            _ => Err(())?
+        })
+    }
+}
+
+fn path_segments(path: &str) -> Vec<&str> {
+    path.split('/').filter(|s| !s.is_empty()).collect()
+}
+
+fn parse<T: FromStr>(s: &str) -> Result<T, ()> {
+    s.parse().map_err(|_| ())
+}
+
 js_serializable!(RouterTarget);
 js_deserializable!(RouterTarget);
 
@@ -94,7 +133,12 @@ impl Into<Route<RouteState>> for RouterTarget {
 /// Convert a Route into a RouterTarget
 impl Into<RouterTarget> for Route<RouteState> {
     fn into(self) -> RouterTarget {
-        self.state
+        let path = if HASH_BASED_URL {
+            self.fragment.unwrap_or_default()
+        } else {
+            self.path_segments.join("/")
+        };
+        path.parse().unwrap_or_default()
     }
 }
 
@@ -130,8 +174,9 @@ impl Component for RootComponent {
     fn create(_: Self::Properties, mut link: ComponentLink<Self>) -> Self {
         // Connect to the router agent using Yew's bridge  method for workers
         // Send back the method we will be using to route the user
-        let router_agent =
+        let mut router_agent =
             RouterAgent::bridge(link.send_back(PageActions::Route));
+        router_agent.send(yew_router::Request::GetCurrentRoute);
 
         RootComponent {
             child_component: RouterTarget::Feed,
