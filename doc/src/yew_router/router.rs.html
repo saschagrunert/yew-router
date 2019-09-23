@@ -289,23 +289,12 @@
 <span id="289">289</span>
 <span id="290">290</span>
 <span id="291">291</span>
-<span id="292">292</span>
-<span id="293">293</span>
-<span id="294">294</span>
-<span id="295">295</span>
-<span id="296">296</span>
-<span id="297">297</span>
-<span id="298">298</span>
-<span id="299">299</span>
-<span id="300">300</span>
-<span id="301">301</span>
-<span id="302">302</span>
-<span id="303">303</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">failure</span>::<span class="ident">Fallible</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections</span>::<span class="ident">HashSet</span>, <span class="ident">fmt</span>::<span class="ident">Debug</span>, <span class="ident">marker</span>::<span class="ident">PhantomData</span>};
 <span class="kw">use</span> <span class="ident">stdweb</span>::{
+    <span class="ident">js</span>,
     <span class="ident">unstable</span>::<span class="ident">TryFrom</span>,
     <span class="ident">web</span>::{
         <span class="ident">event</span>::<span class="ident">PopStateEvent</span>, <span class="ident">window</span>, <span class="ident">EventListenerHandle</span>, <span class="ident">History</span>,
@@ -346,23 +335,10 @@
     <span class="doccomment">/// Registers a callback to the route service. Callbacks will be called</span>
     <span class="doccomment">/// when the History API experiences a change such as popping a state off</span>
     <span class="doccomment">/// of its stack when the forward or back buttons are pressed.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_callback</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">callback</span>: <span class="ident">Callback</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">T</span>)<span class="op">&gt;</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_callback</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">callback</span>: <span class="ident">Callback</span><span class="op">&lt;</span>()<span class="op">&gt;</span>) {
         <span class="self">self</span>.<span class="ident">event_listener</span> <span class="op">=</span>
-            <span class="prelude-val">Some</span>(<span class="ident">window</span>().<span class="ident">add_event_listener</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">event</span>: <span class="ident">PopStateEvent</span><span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">state_value</span>: <span class="ident">Value</span> <span class="op">=</span> <span class="ident">event</span>.<span class="ident">state</span>();
-
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">state</span>) <span class="op">=</span> <span class="ident">T</span>::<span class="ident">try_from</span>(<span class="ident">state_value</span>) {
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">location</span>) <span class="op">=</span> <span class="ident">window</span>().<span class="ident">location</span>() {
-                        <span class="kw">let</span> <span class="ident">route</span>: <span class="ident">String</span> <span class="op">=</span>
-                            <span class="self">Self</span>::<span class="ident">get_route_from_location</span>(<span class="kw-2">&amp;</span><span class="ident">location</span>);
-                        <span class="ident">callback</span>.<span class="ident">emit</span>((<span class="ident">route</span>.<span class="ident">clone</span>(), <span class="ident">state</span>.<span class="ident">clone</span>()))
-                    }
-                } <span class="kw">else</span> {
-                    <span class="macro">eprintln</span><span class="macro">!</span>(
-                        <span class="string">&quot;Nothing farther back in history, not calling routing \
-                         callback.&quot;</span>
-                    );
-                }
+            <span class="prelude-val">Some</span>(<span class="ident">window</span>().<span class="ident">add_event_listener</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">_event</span>: <span class="ident">PopStateEvent</span><span class="op">|</span> {
+                <span class="ident">callback</span>.<span class="ident">emit</span>(())
             }));
     }
 
@@ -404,6 +380,11 @@
     <span class="doccomment">/// Gets the fragment of the current url.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_fragment</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Fallible</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">location</span>.<span class="ident">hash</span>()<span class="question-mark">?</span>)
+    }
+
+    <span class="doccomment">/// Gets the history&#39;s current state.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">T</span> <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">Default</span> {
+        <span class="ident">T</span>::<span class="ident">try_from</span>(<span class="macro">js</span><span class="macro">!</span> { <span class="kw">return</span> <span class="ident">history</span>.<span class="ident">state</span>; }).<span class="ident">unwrap_or_default</span>()
     }
 }
 
@@ -478,18 +459,15 @@
             <span class="ident">path_segments</span>,
             <span class="ident">query</span>,
             <span class="ident">fragment</span>,
-            <span class="ident">state</span>: <span class="ident">T</span>::<span class="ident">default</span>(),
+            <span class="ident">state</span>: <span class="ident">route_service</span>.<span class="ident">get_state</span>(),
         })
     }
 }
 
 <span class="doccomment">/// Messages of the RouterAgent</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Message</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">JsSerialize</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Debug</span> <span class="op">+</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-{
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Message</span> {
     <span class="doccomment">/// The browser URL has changed</span>
-    <span class="ident">BrowserNavigationRouteChanged</span>((<span class="ident">String</span>, <span class="ident">T</span>)),
+    <span class="ident">BrowserNavigationRouteChanged</span>(()),
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Transferable</span> <span class="kw">for</span> <span class="ident">Route</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span> <span class="ident">T</span>: <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Deserialize</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span> {}
@@ -543,7 +521,7 @@
         <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">type</span> <span class="ident">Input</span> <span class="op">=</span> <span class="ident">Request</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Message</span> <span class="op">=</span> <span class="ident">Message</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">Message</span> <span class="op">=</span> <span class="ident">Message</span>;
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Route</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">Reach</span> <span class="op">=</span> <span class="ident">Context</span>;
 
@@ -561,10 +539,8 @@
 
     <span class="kw">fn</span> <span class="ident">update</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span>: <span class="self">Self</span>::<span class="ident">Message</span>) {
         <span class="kw">match</span> <span class="ident">msg</span> {
-            <span class="ident">Message</span>::<span class="ident">BrowserNavigationRouteChanged</span>((<span class="ident">_route_string</span>, <span class="ident">state</span>)) <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="kw-2">mut</span> <span class="ident">route</span>) <span class="op">=</span> <span class="ident">Route</span>::<span class="ident">current_route</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">route_service</span>)
-                {
-                    <span class="ident">route</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">state</span>;
+            <span class="ident">Message</span>::<span class="ident">BrowserNavigationRouteChanged</span>(()) <span class="op">=&gt;</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">route</span>) <span class="op">=</span> <span class="ident">Route</span>::<span class="ident">current_route</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">route_service</span>) {
                     <span class="kw">for</span> <span class="ident">sub</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">subscribers</span> {
                         <span class="self">self</span>.<span class="ident">link</span>.<span class="ident">response</span>(<span class="kw-2">*</span><span class="ident">sub</span>, <span class="ident">route</span>.<span class="ident">clone</span>());
                     }
