@@ -1,16 +1,12 @@
 #![recursion_limit = "256"]
 
-#[macro_use]
-extern crate smart_default;
-extern crate yew_router;
-#[macro_use]
-extern crate log;
-extern crate web_logger;
-
 use std::{convert::Into, fmt};
 
+use log::info;
 use serde::{Deserialize, Serialize};
+use smart_default::SmartDefault;
 use stdweb::{js_deserializable, js_serializable, __js_serializable_boilerplate};
+use web_logger;
 use yew::{
     html, Bridge, Bridged, Component, ComponentLink, Html, Renderable,
     ShouldRender,
