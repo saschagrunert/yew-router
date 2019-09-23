@@ -43,23 +43,10 @@ where
     /// Registers a callback to the route service. Callbacks will be called
     /// when the History API experiences a change such as popping a state off
     /// of its stack when the forward or back buttons are pressed.
-    pub fn register_callback(&mut self, callback: Callback<(String, T)>) {
+    pub fn register_callback(&mut self, callback: Callback<()>) {
         self.event_listener =
-            Some(window().add_event_listener(move |event: PopStateEvent| {
-                let state_value: Value = event.state();
-
-                if let Ok(state) = T::try_from(state_value) {
-                    if let Some(location) = window().location() {
-                        let route: String =
-                            Self::get_route_from_location(&location);
-                        callback.emit((route.clone(), state.clone()))
-                    }
-                } else {
-                    eprintln!(
-                        "Nothing farther back in history, not calling routing \
-                         callback."
-                    );
-                }
+            Some(window().add_event_listener(move |_event: PopStateEvent| {
+                callback.emit(())
             }));
     }
 
@@ -186,12 +173,9 @@ where
 }
 
 /// Messages of the RouterAgent
-pub enum Message<T>
-where
-    T: JsSerialize + Clone + Debug + TryFrom<Value> + 'static,
-{
+pub enum Message {
     /// The browser URL has changed
-    BrowserNavigationRouteChanged((String, T)),
+    BrowserNavigationRouteChanged(()),
 }
 
 impl<T> Transferable for Route<T> where for<'de> T: Serialize + Deserialize<'de> {}
@@ -245,7 +229,7 @@ where
         + 'static,
 {
     type Input = Request<T>;
-    type Message = Message<T>;
+    type Message = Message;
     type Output = Route<T>;
     type Reach = Context;
 
@@ -263,10 +247,8 @@ where
 
     fn update(&mut self, msg: Self::Message) {
         match msg {
-            Message::BrowserNavigationRouteChanged((_route_string, state)) => {
-                if let Ok(mut route) = Route::current_route(&self.route_service)
-                {
-                    route.state = state;
+            Message::BrowserNavigationRouteChanged(()) => {
+                if let Ok(route) = Route::current_route(&self.route_service) {
                     for sub in &self.subscribers {
                         self.link.response(*sub, route.clone());
                     }
