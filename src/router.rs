@@ -2,6 +2,7 @@ use failure::Fallible;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, fmt::Debug, marker::PhantomData};
 use stdweb::{
+    js,
     unstable::TryFrom,
     web::{
         event::PopStateEvent, window, EventListenerHandle, History,
@@ -42,23 +43,10 @@ where
     /// Registers a callback to the route service. Callbacks will be called
     /// when the History API experiences a change such as popping a state off
     /// of its stack when the forward or back buttons are pressed.
-    pub fn register_callback(&mut self, callback: Callback<(String, T)>) {
+    pub fn register_callback(&mut self, callback: Callback<()>) {
         self.event_listener =
-            Some(window().add_event_listener(move |event: PopStateEvent| {
-                let state_value: Value = event.state();
-
-                if let Ok(state) = T::try_from(state_value) {
-                    if let Some(location) = window().location() {
-                        let route: String =
-                            Self::get_route_from_location(&location);
-                        callback.emit((route.clone(), state.clone()))
-                    }
-                } else {
-                    eprintln!(
-                        "Nothing farther back in history, not calling routing \
-                         callback."
-                    );
-                }
+            Some(window().add_event_listener(move |_event: PopStateEvent| {
+                callback.emit(())
             }));
     }
 
@@ -100,6 +88,11 @@ where
     /// Gets the fragment of the current url.
     pub fn get_fragment(&self) -> Fallible<String> {
         Ok(self.location.hash()?)
+    }
+
+    /// Gets the history's current state.
+    pub fn get_state(&self) -> T where T: Default {
+        T::try_from(js! { return history.state; }).unwrap_or_default()
     }
 }
 
@@ -174,18 +167,15 @@ where
             path_segments,
             query,
             fragment,
-            state: T::default(),
+            state: route_service.get_state(),
         })
     }
 }
 
 /// Messages of the RouterAgent
-pub enum Message<T>
-where
-    T: JsSerialize + Clone + Debug + TryFrom<Value> + 'static,
-{
+pub enum Message {
     /// The browser URL has changed
-    BrowserNavigationRouteChanged((String, T)),
+    BrowserNavigationRouteChanged(()),
 }
 
 impl<T> Transferable for Route<T> where for<'de> T: Serialize + Deserialize<'de> {}
@@ -239,7 +229,7 @@ where
         + 'static,
 {
     type Input = Request<T>;
-    type Message = Message<T>;
+    type Message = Message;
     type Output = Route<T>;
     type Reach = Context;
 
@@ -257,10 +247,8 @@ where
 
     fn update(&mut self, msg: Self::Message) {
         match msg {
-            Message::BrowserNavigationRouteChanged((_route_string, state)) => {
-                if let Ok(mut route) = Route::current_route(&self.route_service)
-                {
-                    route.state = state;
+            Message::BrowserNavigationRouteChanged(()) => {
+                if let Ok(route) = Route::current_route(&self.route_service) {
                     for sub in &self.subscribers {
                         self.link.response(*sub, route.clone());
                     }

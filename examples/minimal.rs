@@ -1,12 +1,10 @@
 #![recursion_limit = "256"]
 
-#[macro_use]
-extern crate yew_router;
 use yew::{
     html, Bridge, Bridged, Component, ComponentLink, Html, Renderable,
     ShouldRender,
 };
-use yew_router::{Route, RouterAgent};
+use yew_router::{Route, RouterAgent, routes};
 
 // Define application routes via the macro
 // This creates the `RouterTarget` struct
@@ -23,7 +21,7 @@ pub struct RootComponent {
     child_component: RouterTarget,
 
     // The RouterAgent is a brige to the Router service created by the yew_router module. See Yew's Agent Model for more details
-    router_agent: Box<Bridge<RouterAgent<()>>>,
+    router_agent: Box<dyn Bridge<RouterAgent<()>>>,
 }
 
 // Define some basic actions that can be executed by elements on our page
