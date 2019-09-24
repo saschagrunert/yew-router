@@ -6,12 +6,9 @@ use std::{convert::Into, fmt, str::FromStr};
 use log::info;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-use stdweb::{js_deserializable, js_serializable, __js_serializable_boilerplate};
+use stdweb::{__js_serializable_boilerplate, js_deserializable, js_serializable};
 use web_logger;
-use yew::{
-    html, Bridge, Bridged, Component, ComponentLink, Html, Renderable,
-    ShouldRender,
-};
+use yew::{html, Bridge, Bridged, Component, ComponentLink, Html, Renderable, ShouldRender};
 use yew_router::{Route, RouterAgent};
 
 #[derive(SmartDefault, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -19,8 +16,13 @@ pub enum RouterTarget {
     #[default]
     Home,
     Feed,
-    Profile { user_id: i64 },
-    Foo { name: String, id: i64 },
+    Profile {
+        user_id: i64,
+    },
+    Foo {
+        name: String,
+        id: i64,
+    },
     Post(i64),
     Bar(String, i64),
     Settings(SettingsRoute),
@@ -72,12 +74,17 @@ impl FromStr for RouterTarget {
         Ok(match &path_segments(path)[..] {
             ["home"] => RouterTarget::Home,
             ["feed"] => RouterTarget::Feed,
-            ["profile", user_id] => RouterTarget::Profile { user_id: parse(user_id)? },
-            ["foo", name, id] => RouterTarget::Foo { name: name.to_string(), id: parse(id)? },
+            ["profile", user_id] => RouterTarget::Profile {
+                user_id: parse(user_id)?,
+            },
+            ["foo", name, id] => RouterTarget::Foo {
+                name: name.to_string(),
+                id: parse(id)?,
+            },
             ["post", id] => RouterTarget::Post(parse(id)?),
             ["bar", name, id] => RouterTarget::Bar(name.to_string(), parse(id)?),
-            ["settings", sub_route @ ..] => RouterTarget::Settings(parse(&sub_route.join("/"))?),
-            _ => Err(())?
+            ["settings", sub_route..] => RouterTarget::Settings(parse(&sub_route.join("/"))?),
+            _ => Err(())?,
         })
     }
 }
@@ -90,7 +97,7 @@ impl FromStr for SettingsRoute {
             ["notifications"] => SettingsRoute::Notifications,
             ["privacy"] => SettingsRoute::Privacy,
             ["foobar", id] => SettingsRoute::Foobar(parse(id)?),
-            _ => Err(())?
+            _ => Err(())?,
         })
     }
 }
@@ -174,8 +181,7 @@ impl Component for RootComponent {
     fn create(_: Self::Properties, mut link: ComponentLink<Self>) -> Self {
         // Connect to the router agent using Yew's bridge  method for workers
         // Send back the method we will be using to route the user
-        let mut router_agent =
-            RouterAgent::bridge(link.send_back(PageActions::Route));
+        let mut router_agent = RouterAgent::bridge(link.send_back(PageActions::Route));
         router_agent.send(yew_router::Request::GetCurrentRoute);
 
         RootComponent {
