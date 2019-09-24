@@ -9,7 +9,7 @@ pub use crate::router::{Request, Route, RouterAgent};
 /// Convinience macro for route creation
 macro_rules! routes {
     ($($x:tt => $y:expr,)*) => (
-        #[derive(Debug, PartialEq)]
+        #[derive(Debug, PartialEq, Clone, Copy)]
         /// Possible child components
         pub enum RouterTarget {
             $($x,)*
