@@ -55,7 +55,7 @@
 <span class="doccomment">/// Convinience macro for route creation</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">routes</span> {
     ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">tt</span> <span class="op">=&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">y</span>:<span class="ident">expr</span>,)<span class="kw-2">*</span>) <span class="op">=&gt;</span> (
-        <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
+        <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
         <span class="doccomment">/// Possible child components</span>
         <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RouterTarget</span> {
             $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>,)<span class="op">*</span>
