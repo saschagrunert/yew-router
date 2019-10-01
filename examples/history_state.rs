@@ -6,9 +6,14 @@ use std::{convert::Into, fmt, str::FromStr};
 use log::info;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-use stdweb::{__js_serializable_boilerplate, js_deserializable, js_serializable};
+use stdweb::{
+    __js_serializable_boilerplate, js_deserializable, js_serializable,
+};
 use web_logger;
-use yew::{html, Bridge, Bridged, Component, ComponentLink, Html, Renderable, ShouldRender};
+use yew::{
+    html, Bridge, Bridged, Component, ComponentLink, Html, Renderable,
+    ShouldRender,
+};
 use yew_router::{Route, RouterAgent};
 
 #[derive(SmartDefault, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -43,11 +48,17 @@ impl fmt::Display for RouterTarget {
             match self {
                 RouterTarget::Home => "home".into(),
                 RouterTarget::Feed => "feed".into(),
-                RouterTarget::Profile { user_id } => format!("profile/{}", user_id),
-                RouterTarget::Foo { name, id } => format!("foo/{}/{}", name, id),
+                RouterTarget::Profile { user_id } => {
+                    format!("profile/{}", user_id)
+                }
+                RouterTarget::Foo { name, id } => {
+                    format!("foo/{}/{}", name, id)
+                }
                 RouterTarget::Post(i) => format!("post/{}", i),
                 RouterTarget::Bar(s, i) => format!("bar/{}/{}", s, i),
-                RouterTarget::Settings(sub_route) => format!("settings/{}", sub_route),
+                RouterTarget::Settings(sub_route) => {
+                    format!("settings/{}", sub_route)
+                }
             },
         )
     }
@@ -82,8 +93,12 @@ impl FromStr for RouterTarget {
                 id: parse(id)?,
             },
             ["post", id] => RouterTarget::Post(parse(id)?),
-            ["bar", name, id] => RouterTarget::Bar(name.to_string(), parse(id)?),
-            ["settings", sub_route..] => RouterTarget::Settings(parse(&sub_route.join("/"))?),
+            ["bar", name, id] => {
+                RouterTarget::Bar(name.to_string(), parse(id)?)
+            }
+            ["settings", sub_route] => {
+                RouterTarget::Settings(parse(&sub_route.join("/"))?)
+            }
             _ => Err(())?,
         })
     }
@@ -181,7 +196,8 @@ impl Component for RootComponent {
     fn create(_: Self::Properties, mut link: ComponentLink<Self>) -> Self {
         // Connect to the router agent using Yew's bridge  method for workers
         // Send back the method we will be using to route the user
-        let mut router_agent = RouterAgent::bridge(link.send_back(PageActions::Route));
+        let mut router_agent =
+            RouterAgent::bridge(link.send_back(PageActions::Route));
         router_agent.send(yew_router::Request::GetCurrentRoute);
 
         RootComponent {
