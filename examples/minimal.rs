@@ -1,9 +1,6 @@
 #![recursion_limit = "256"]
 
-use yew::{
-    html, Bridge, Bridged, Component, ComponentLink, Html, Renderable,
-    ShouldRender,
-};
+use yew::{html, Bridge, Bridged, Component, ComponentLink, Html, Renderable, ShouldRender};
 use yew_router::{routes, Route, RouterAgent};
 
 // Define application routes via the macro
@@ -40,8 +37,7 @@ impl Component for RootComponent {
     fn create(_: Self::Properties, mut link: ComponentLink<Self>) -> Self {
         // Connect to the router agent using Yew's bridge  method for workers
         // Send back the method we will be using to route the user
-        let router_agent =
-            RouterAgent::bridge(link.send_back(PageActions::Route));
+        let router_agent = RouterAgent::bridge(link.send_back(PageActions::Route));
 
         RootComponent {
             child_component: RouterTarget::Login,

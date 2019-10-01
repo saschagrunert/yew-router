@@ -4,10 +4,7 @@ use std::{collections::HashSet, fmt::Debug, marker::PhantomData};
 use stdweb::{
     js,
     unstable::TryFrom,
-    web::{
-        event::PopStateEvent, window, EventListenerHandle, History,
-        IEventTarget, Location,
-    },
+    web::{event::PopStateEvent, window, EventListenerHandle, History, IEventTarget, Location},
     JsSerialize, Value,
 };
 use yew::{callback::Callback, prelude::worker::*};
@@ -45,9 +42,7 @@ where
     /// of its stack when the forward or back buttons are pressed.
     pub fn register_callback(&mut self, callback: Callback<()>) {
         self.event_listener =
-            Some(window().add_event_listener(move |_event: PopStateEvent| {
-                callback.emit(())
-            }));
+            Some(window().add_event_listener(move |_event: PopStateEvent| callback.emit(())));
     }
 
     /// Sets the browser's url bar to contain the provided route, and creates a
@@ -145,8 +140,7 @@ where
     pub fn current_route(route_service: &RouterService<T>) -> Fallible<Self> {
         // guaranteed to always start with a '/'
         let path = route_service.get_path()?;
-        let mut path_segments: Vec<String> =
-            path.split('/').map(String::from).collect();
+        let mut path_segments: Vec<String> = path.split('/').map(String::from).collect();
         // remove empty string that is split from the first '/'
         path_segments.remove(0);
 
@@ -194,10 +188,7 @@ pub enum Request<T> {
     GetCurrentRoute,
 }
 
-impl<T> Transferable for Request<T> where
-    for<'de> T: Serialize + Deserialize<'de>
-{
-}
+impl<T> Transferable for Request<T> where for<'de> T: Serialize + Deserialize<'de> {}
 
 /// The RouterAgent worker holds on to the RouterService singleton and mediates
 /// access to it.
