@@ -5,3 +5,5 @@
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/saschagrunert/yew-router/blob/master/LICENSE)
 
 ## Routing extension to [yew](https://github.com/DenisKolodin/yew)
+
+**This project has been deprecated in favor of https://github.com/yewstack/yew_router**
